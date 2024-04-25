@@ -17,7 +17,7 @@ const pgClient = new Pool({
   database: keys.pgDatabase,
   password: keys.pgPassword,
   port: keys.pgPort,
-  ssl:
+  ssl: // This is a workaround for the error: "self signed certificate"
     process.env.NODE_ENV !== 'production'
       ? false
       : { rejectUnauthorized: false },
@@ -63,6 +63,7 @@ app.post('/values', async (req, res) => {
     return res.status(422).send('Index too high');
   }
 
+  // hset(key, field, value)
   redisClient.hset('values', index, 'Nothing yet!');
   redisPublisher.publish('insert', index);
   pgClient.query('INSERT INTO values(number) VALUES($1)', [index]);
