@@ -24,8 +24,8 @@ services:
       - "3050:80"
     depends_on:
       - client
-      - server
-  server:
+      - api
+  api:
     build:
       context: ./server # Path to the Dockerfile
       dockerfile: Dockerfile.dev
@@ -36,6 +36,7 @@ services:
     environment:
       - REDIS_HOST=redis # specify the redis host as the name of the service (1) 
       - REDIS_PORT=6379 # specify the redis port
+      - PGUSER=postgres # specify the postgres user
       - PGHOST=postgres # specify the postgres host
       - PGDATABASE=postgres # specify the postgres database
       - PGPASSWORD=password # specify the postgres password
@@ -57,3 +58,5 @@ services:
     volumes:
       - /app/node_modules
       - ./client:/app
+    environment:
+      - WDS_SOCKET_PORT=0
