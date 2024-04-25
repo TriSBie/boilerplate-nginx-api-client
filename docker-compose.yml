@@ -1,0 +1,59 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=password
+  redis:
+    # (1)
+    image: redis:latest
+    container_name: redis
+    environment:
+      - REDIS_HOST=password
+    ports:
+      - "6379:6379"
+  nginx:
+    restart: always # always restart the nginx container if it crashes
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3050:80"
+    depends_on:
+      - client
+      - server
+  server:
+    build:
+      context: ./server # Path to the Dockerfile
+      dockerfile: Dockerfile.dev
+    volumes:
+      # volumes are used to share files between the host and the container ~ WORKDIR FILE SHARING
+      - /app/node_modules # dont try to override the node_modules folder in the container
+      - ./server:/app # share the server folder with the container
+    environment:
+      - REDIS_HOST=redis # specify the redis host as the name of the service (1) 
+      - REDIS_PORT=6379 # specify the redis port
+      - PGHOST=postgres # specify the postgres host
+      - PGDATABASE=postgres # specify the postgres database
+      - PGPASSWORD=password # specify the postgres password
+      - PGPORT=5432 # specify the postgres port
+  worker:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./worker
+    volumes:
+      - /app/node_modules
+      - ./worker:/app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+  client:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./client
+    volumes:
+      - /app/node_modules
+      - ./client:/app
