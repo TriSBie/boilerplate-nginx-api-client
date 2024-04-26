@@ -1,0 +1,22 @@
+sudo: required
+language: generic
+services:
+  - docker
+
+before_install:
+  - docker build -t kriss/docker-react -f ./client/Dockerfile.dev ./client
+
+script: docker run kriss/docker-react
+
+after_success:
+  - docker build -t kriss/multi-client ./client
+  - docker build -t kriss/multi-nginx ./nginx
+  - docker build -t kriss/multi-server ./server
+  - docker build -t kriss/multi-worker ./worker
+  # Login to the docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  # Takes those images and push to docker hub
+  - docker push kristana/multi-client
+  - docker push kristana/multi-nginx
+  - docker push kristana/multi-server
+  - docker push kristana/multi-worker
