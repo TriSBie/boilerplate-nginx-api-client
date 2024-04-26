@@ -6,7 +6,7 @@ services:
 before_install:
   - docker build -t kriss/docker-react -f ./client/Dockerfile.dev ./client
 
-script: docker run kriss/docker-react
+script: docker run -d kriss/docker-react
 
 after_success:
   - docker build -t kriss/multi-client ./client
