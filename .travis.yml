@@ -9,10 +9,10 @@ before_install:
 script: docker run -d kriss/docker-react
 
 after_success:
-  - docker build -t kriss/multi-client ./client
-  - docker build -t kriss/multi-nginx ./nginx
-  - docker build -t kriss/multi-server ./server
-  - docker build -t kriss/multi-worker ./worker
+  - docker build -t kristana/multi-client ./client
+  - docker build -t kristana/multi-nginx ./nginx
+  - docker build -t kristana/multi-server ./server
+  - docker build -t kristana/multi-worker ./worker
   # Login to the docker CLI
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   # Takes those images and push to docker hub
